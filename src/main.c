@@ -3,10 +3,19 @@
 #include <stdlib.h>
 
 #include "server.h"
+#include "const.h"
+
+struct Server* server;
+
+void stop_program() {
+    stop_free_server(server);
+}
 
 int main() {
 
-    struct Server* server = create_server("0.0.0.0", 8080, 10);
+    signal(SIGINT, stop_program);
+
+    server = create_server(HOST, PORT, MAX_CONNECTIONS);
     start_server(server);
 
 

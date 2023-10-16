@@ -1,6 +1,14 @@
 {
     "files.associations": {
         "*.py": "python",
-        "socket.h": "c"
+        "socket.h": "c",
+        "random": "c",
+        "typeindex": "c",
+        "typeinfo": "c",
+        "http.h": "c",
+        "stdio.h": "c",
+        "stdint.h": "c",
+        "contect.h": "c",
+        "const.h": "c"
     }
 }

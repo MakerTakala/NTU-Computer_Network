@@ -1,21 +1,38 @@
-EXCUTABLE=server
-SOURCES=$(wildcard src/*.c)
-OBJECTS=$(SOURCES:.c=.o)
-DEPS=$(SOURCES:.c=.d)
+EXE=server
+SRC=$(wildcard src/*.c)
+OBJ=$(SRC:.c=.o)
+DEP=$(SRC:.c=.d)
 FLAGS=-Wall -g
 
+CLIEN_EXE=client
+CLIENT_SRC=$(wildcard src/client/*.c)
+CLIENT_OBJ=$(CLIENT_SRC:.c=.o)
+CLIENT_DEP=$(CLIENT_SRC:.c=.d)
 
-all: $(EXCUTABLE)
 
--include $(DEPS)
+all: $(EXE) $(CLIEN_EXE)
 
-src/%.o: src/%.c
-	gcc -c $(FLAGS) -MMD $< -o $@
+-include $(DEP)
 
-$(EXCUTABLE): $(OBJECTS)
+$(EXE): $(OBJ)
 	$(CC) $(FLAGS) $^ -o $@
 
+CLIEN_EXE: $(CLIENT_OBJ)
+	$(CC) $(FLAGS) $^ -o $@
+
+%.o: %.c
+	gcc -c $(FLAGS) -MMD $< -o $@
+
+
+$(CLIEN_EXE): $(CLIENT_OBJ)
+	$(CC) $(FLAGS) $^ -o $@
+
+%.o: %.c
+	gcc -c $(FLAGS) -MMD $< -o $@
+
+
+
 clean:
-	rm -f $(OBJECTS) $(EXCUTABLE)
+	rm -f $(OBJ) $(EXE)
 
 .PNONY: all clean
