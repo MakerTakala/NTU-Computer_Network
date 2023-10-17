@@ -51,8 +51,10 @@ void start_server(struct Server *server) {
 
 void stop_free_server(struct Server *server) {
     if (shutdown(server->socket_fd, SHUT_RDWR) == -1) {
+        close(server->socket_fd);
         fprintf(stderr, "Error closing socket");
         exit(EXIT_FAILURE);
     }
+    close(server->socket_fd);
     free(server);
 }

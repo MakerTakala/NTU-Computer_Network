@@ -49,7 +49,6 @@ int main()
         sprintf(send_buffer, "POST / HTTP/1.1\r\nHost: localhost:%d\r\n\r\n", PORT);
         sprintf(send_buffer, "%s%s", send_buffer, message);
         free(message);
-        printf("Sending:\n%s", send_buffer);
 
         send(sock_fd, send_buffer, BUFFER_SIZE, 0);
         free(send_buffer);
