@@ -36,6 +36,7 @@ static char* get_profile() {
     respond->body = profile;
 
     char *respond_string = respond_http_to_string(respond);
+    free_respond_http(respond);
     return respond_string;
 }
 
@@ -75,7 +76,7 @@ int32_t contect(int32_t client_fd) {
         fprintf(stderr, "Method not supported");
         return -1;
     }
-    free(request);
+    free_request_http(request);
     
     printf("Sending:\n%s\n", send_buffer);
 
