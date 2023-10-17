@@ -155,3 +155,67 @@ RequestHttp* request_http_from_string(char *request_http_string) {
     
     return request_http;
 }
+
+void free_respond_http(RespondHttp *respond_http) {
+    if (respond_http == NULL) {
+        return;
+    }
+    if (respond_http->protocol != NULL) {
+        free(respond_http->protocol);
+    }
+    if (respond_http->status_code != NULL) {
+        free(respond_http->status_code);
+    }
+    if (respond_http->status_text != NULL) {
+        free(respond_http->status_text);
+    }
+    HttpHeader *header = respond_http->headers;
+    while (header != NULL) {
+        HttpHeader *next = header->next;
+        if (header->key != NULL) {
+            free(header->key);
+        }
+        if (header->value != NULL) {
+            free(header->value);
+        }
+        free(header);
+        header = next;
+    }
+    if (respond_http->body != NULL) {
+        free(respond_http->body);
+    }
+    free(respond_http);
+    return;
+}
+
+void free_request_http(RequestHttp *request_http) {
+    if (request_http == NULL) {
+        return;
+    }
+    if (request_http->method != NULL) {
+        free(request_http->method);
+    }
+    if (request_http->path != NULL) {
+        free(request_http->path);
+    }
+    if (request_http->protocol != NULL) {
+        free(request_http->protocol);
+    }
+    HttpHeader *header = request_http->headers;
+    while (header != NULL) {
+        HttpHeader *next = header->next;
+        if (header->key != NULL) {
+            free(header->key);
+        }
+        if (header->value != NULL) {
+            free(header->value);
+        }
+        free(header);
+        header = next;
+    }
+    if (request_http->body != NULL) {
+        free(request_http->body);
+    }
+    free(request_http);
+    return;
+}

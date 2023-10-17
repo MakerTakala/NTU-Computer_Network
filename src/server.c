@@ -44,8 +44,8 @@ void start_server(struct Server *server) {
 
         if (contect(client_fd) == -1) {
             fprintf(stderr, "Contect failed");
-            break;
         }
+        close(client_fd);
     }
 }
 

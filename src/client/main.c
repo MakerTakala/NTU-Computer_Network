@@ -11,30 +11,29 @@
 
 int main()
 {
-    int sock_fd;
-    struct sockaddr_in serv_name;
-    int status;
     
-
-    // create a socket
-    sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock_fd == -1) {
-        perror("Socket creation error");
-        exit(1);
-    }
-
-    // server address
-    serv_name.sin_family = AF_INET;
-    inet_aton(HOST, &serv_name.sin_addr);
-    serv_name.sin_port = htons(PORT);
-
-    status = connect(sock_fd, (struct sockaddr *)&serv_name, sizeof(serv_name));
-    if (status == -1) {
-        perror("Connection error");
-        exit(1);
-    }
-
+    
+    
+    
     while (1) {
+        int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+        if (sock_fd == -1) {
+            perror("Socket creation error");
+            exit(1);
+        }
+
+        struct sockaddr_in serv_name;
+        serv_name.sin_family = AF_INET;
+        inet_aton(HOST, &serv_name.sin_addr);
+        serv_name.sin_port = htons(PORT);
+
+        int status = connect(sock_fd, (struct sockaddr *)&serv_name, sizeof(serv_name));
+        if (status == -1) {
+            perror("Connection error");
+            exit(1);
+        }
+
+    
         char *message = calloc(BUFFER_SIZE, sizeof(char));
         char *read_buffer = calloc(BUFFER_SIZE, sizeof(char)), *send_buffer = calloc(BUFFER_SIZE, sizeof(char));
         printf("please input message: ");
@@ -46,8 +45,7 @@ int main()
             exit(EXIT_SUCCESS);
         }
 
-        sprintf(send_buffer, "POST / HTTP/1.1\r\nHost: localhost:%d\r\n\r\n", PORT);
-        sprintf(send_buffer, "%s%s", send_buffer, message);
+        sprintf(send_buffer, "POST / HTTP/1.1\r\nHost: localhost:%d\r\n\r\n%s", PORT, message);
         free(message);
 
         send(sock_fd, send_buffer, BUFFER_SIZE, 0);
@@ -61,6 +59,7 @@ int main()
         }
         printf("\nReceived:\n%s\n", read_buffer);
         free(read_buffer);  
+        close(sock_fd);
     }
 
     return 0;

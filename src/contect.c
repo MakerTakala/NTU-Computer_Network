@@ -44,52 +44,47 @@ static char* post_reflect(char *message) {
 }
 
 int32_t contect(int32_t client_fd) {
-    while(1) {
-        char *read_buffer = calloc(BUFFER_SIZE, sizeof(char));
-        if (recv(client_fd, read_buffer, BUFFER_SIZE, 0) == -1) {
-            fprintf(stderr, "Recv failed");
-            close(client_fd);
-            return -1;
-        }
-        if (strlen(read_buffer) == 0) {
-            printf("Client disconnected\n");
-            close(client_fd);
-            return 0;
-        }
-
-        printf("Received:\n%s\n", read_buffer);
-        RequestHttp *request = request_http_from_string(read_buffer);
-        free(read_buffer);
-        char *send_buffer = NULL;
-        if (request == NULL) {
-            fprintf(stderr, "Request is Wrong");
-            close(client_fd);
-            return -1;
-        }
-        else if (!strcmp(request->method, "GET")) {
-            if (!strcmp(request->path, "/")) {
-                send_buffer = get_profile();
-            }
-        }
-        else if (!strcmp(request->method, "POST")) {
-            if (!strcmp(request->path, "/")) {
-                send_buffer = post_reflect(request->body);
-            }   
-        }
-        else {
-            fprintf(stderr, "Method not supported");
-            close(client_fd);
-            return -1;
-        }
-        free(request);
-        
-        printf("Sending:\n%s\n", send_buffer);
-
-        if (send(client_fd, send_buffer, BUFFER_SIZE, 0) == -1) {
-            fprintf(stderr, "Send failed");
-            close(client_fd);
-            return -1;
-        }
-        free(send_buffer);
+    char *read_buffer = calloc(BUFFER_SIZE, sizeof(char));
+    if (recv(client_fd, read_buffer, BUFFER_SIZE, 0) == -1) {
+        fprintf(stderr, "Recv failed");
+        return -1;
     }
+    if (strlen(read_buffer) == 0) {
+        printf("Client disconnected\n");
+        return 0;
+    }
+
+    printf("Received:\n%s\n", read_buffer);
+    RequestHttp *request = request_http_from_string(read_buffer);
+    free(read_buffer);
+    char *send_buffer = NULL;
+    if (request == NULL) {
+        fprintf(stderr, "Request is Wrong");
+        return -1;
+    }
+    else if (!strcmp(request->method, "GET")) {
+        if (!strcmp(request->path, "/")) {
+            send_buffer = get_profile();
+        }
+    }
+    else if (!strcmp(request->method, "POST")) {
+        if (!strcmp(request->path, "/")) {
+            send_buffer = post_reflect(request->body);
+        }   
+    }
+    else {
+        fprintf(stderr, "Method not supported");
+        return -1;
+    }
+    free(request);
+    
+    printf("Sending:\n%s\n", send_buffer);
+
+    if (send(client_fd, send_buffer, BUFFER_SIZE, 0) == -1) {
+        fprintf(stderr, "Send failed");
+        return -1;
+    }
+    free(send_buffer);
+    close(client_fd);
+    return 0;
 }
