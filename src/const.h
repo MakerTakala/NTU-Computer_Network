@@ -1,4 +1,4 @@
-#define BUFFER_SIZE 16384
+#define BUFFER_SIZE 32768
 #define HOST "127.0.0.1"
 #define PORT 8080
-#define MAX_CONNECTIONS 10
+#define MAX_CONNECTIONS 19

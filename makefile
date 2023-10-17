@@ -24,12 +24,8 @@ CLIEN_EXE: $(CLIENT_OBJ)
 	gcc -c $(FLAGS) -MMD $< -o $@
 
 
-$(CLIEN_EXE): $(CLIENT_OBJ)
+$(CLIEN_EXE): $(CLIENT_OBJ) 
 	$(CC) $(FLAGS) $^ -o $@
-
-%.o: %.c
-	gcc -c $(FLAGS) -MMD $< -o $@
-
 
 
 clean:

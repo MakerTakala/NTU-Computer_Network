@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "../const.h"
 
@@ -34,27 +35,33 @@ int main()
     }
 
     while (1) {
-        char indata[BUFFER_SIZE] = {0}, outdata[BUFFER_SIZE] = {0};
+        char *message = calloc(BUFFER_SIZE, sizeof(char));
+        char *read_buffer = calloc(BUFFER_SIZE, sizeof(char)), *send_buffer = calloc(BUFFER_SIZE, sizeof(char));
         printf("please input message: ");
-        fgets(outdata, sizeof(outdata), stdin);
+        fgets(message, BUFFER_SIZE, stdin);
 
-        if(!strcmp(outdata, "exit\n")) {
+        if(!strcmp(message, "exit\n")) {
             close(sock_fd);
             printf("EXIT.\n");
             exit(EXIT_SUCCESS);
         }
 
-        printf("Sending: %s\n", outdata);
-        send(sock_fd, outdata, strlen(outdata), 0);
+        sprintf(send_buffer, "POST / HTTP/1.1\r\nHost: localhost:%d\r\n\r\n", PORT);
+        sprintf(send_buffer, "%s%s", send_buffer, message);
+        free(message);
+        printf("Sending:\n%s", send_buffer);
 
-        int nbytes = recv(sock_fd, indata, sizeof(indata), 0);
-
-        if (nbytes <= 0) {
+        send(sock_fd, send_buffer, BUFFER_SIZE, 0);
+        free(send_buffer);
+        
+        if (recv(sock_fd, read_buffer, BUFFER_SIZE, 0) == -1) {
             close(sock_fd);
             printf("server closed connection.\n");
+            perror("Recv failed");
             break;
         }
-        printf("Received: %s\n", indata);
+        printf("\nReceived:\n%s\n", read_buffer);
+        free(read_buffer);  
     }
 
     return 0;

@@ -5,7 +5,7 @@
 #include "server.h"
 #include "const.h"
 
-struct Server* server;
+struct Server *server;
 
 void stop_program() {
     stop_free_server(server);

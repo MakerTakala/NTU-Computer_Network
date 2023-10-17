@@ -4,32 +4,33 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "const.h"
 
 typedef struct HttpHeader {
-    char* key;
-    char* value;
-    struct HttpHeader* next;
+    char *key;
+    char *value;
+    struct HttpHeader *next;
 } HttpHeader;
 
 typedef struct RespondHttp {
-    char* protocol;
-    char* status_code;
-    char* status_text;
-    HttpHeader* headers;
-    char* body;
+    char *protocol;
+    char *status_code;
+    char *status_text;
+    HttpHeader *headers;
+    char *body;
 } RespondHttp;
 
 typedef struct RequestHttp {
-    char* method;
-    char* path;
-    char* protocol;
-    HttpHeader* headers;
-    char* body;
+    char *method;
+    char *path;
+    char *protocol;
+    HttpHeader *headers;
+    char *body;
 } RequestHttp;
 
-char* respond_http_to_string(RespondHttp* respond_http);
-char* request_http_to_string(RequestHttp* request_http);
-RespondHttp* respond_http_from_string(char* respond_http_string);
-RequestHttp* request_http_from_string(char* request_http_string);
+char* respond_http_to_string(RespondHttp *respond_http);
+char* request_http_to_string(RequestHttp *request_http);
+RespondHttp* respond_http_from_string(char *respond_http_string);
+RequestHttp* request_http_from_string(char *request_http_string);

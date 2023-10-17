@@ -1,12 +1,8 @@
 
 #include "server.h"
 
-struct Server* create_server(char* address, uint16_t port, uint32_t max_connections) {
-    struct Server* server = calloc(1, sizeof(struct Server));
-    if (server == NULL) {
-        fprintf(stderr, "Error allocating memory for server");
-        exit(EXIT_FAILURE);
-    }
+struct Server* create_server(char *address, uint16_t port, uint32_t max_connections) {
+    struct Server *server = calloc(1, sizeof(struct Server));
 
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd == -1) {
@@ -29,7 +25,7 @@ struct Server* create_server(char* address, uint16_t port, uint32_t max_connecti
     return server;
 }
 
-void start_server(struct Server* server) {
+void start_server(struct Server *server) {
     if (listen(server->socket_fd, server->max_connections) == -1) {
         fprintf(stderr, "Listen failed");
         exit(EXIT_FAILURE);
@@ -53,7 +49,7 @@ void start_server(struct Server* server) {
     }
 }
 
-void stop_free_server(struct Server* server) {
+void stop_free_server(struct Server *server) {
     if (shutdown(server->socket_fd, SHUT_RDWR) == -1) {
         fprintf(stderr, "Error closing socket");
         exit(EXIT_FAILURE);
