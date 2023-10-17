@@ -50,7 +50,6 @@ int32_t contect(int32_t client_fd) {
         return -1;
     }
     if (strlen(read_buffer) == 0) {
-        printf("Client disconnected\n");
         return 0;
     }
 
@@ -81,10 +80,12 @@ int32_t contect(int32_t client_fd) {
     printf("Sending:\n%s\n", send_buffer);
 
     if (send(client_fd, send_buffer, BUFFER_SIZE, 0) == -1) {
-        fprintf(stderr, "Send failed");
-        return -1;
+        printf("client closed connection.\n");
+        free(send_buffer);
+        close(client_fd);
+        return 0;
     }
     free(send_buffer);
     close(client_fd);
-    return 0;
+    return 1;
 }

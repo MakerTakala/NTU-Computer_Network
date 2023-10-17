@@ -34,5 +34,6 @@ char* respond_http_to_string(RespondHttp *respond_http);
 char* request_http_to_string(RequestHttp *request_http);
 RespondHttp* respond_http_from_string(char *respond_http_string);
 RequestHttp* request_http_from_string(char *request_http_string);
+void free_http_headers(HttpHeader *http_header);
 void free_respond_http(RespondHttp *respond_http);
 void free_request_http(RequestHttp *request_http);

@@ -49,17 +49,26 @@ RespondHttp* respond_http_from_string(char *respond_http_string) {
     RespondHttp *respond_http = (RespondHttp*)calloc(1, sizeof(RespondHttp));
 
     char *token = strtok(header_token, " ");
-    if (token == NULL) return NULL;
+    if (token == NULL) {
+        free_respond_http(respond_http);
+        return NULL;
+    }
     respond_http->protocol = (char*)calloc(strlen(token), sizeof(char));
     strcpy(respond_http->protocol, token);
 
     token = strtok(NULL, " ");
-    if (token == NULL) return NULL;
+    if (token == NULL) {
+        free_respond_http(respond_http);
+        return NULL;
+    }
     respond_http->status_code = (char*)calloc(strlen(token), sizeof(char));
     strcpy(respond_http->status_code, token);
 
     token = strtok(NULL, "\r\n");
-    if (token == NULL) return NULL;
+    if (token == NULL) {
+        free_respond_http(respond_http);
+        return NULL;
+    }
     respond_http->status_text = (char*)calloc(strlen(token), sizeof(char));
     strcpy(respond_http->status_text, token);
 
@@ -71,7 +80,10 @@ RespondHttp* respond_http_from_string(char *respond_http_string) {
         HttpHeader *header = (HttpHeader*)calloc(1, sizeof(HttpHeader));
 
         char *split = strstr(token, ": ");
-        if (split == NULL) return NULL;
+        if (split == NULL) {
+            free_respond_http(respond_http);
+            return NULL;
+        }
         split[0] = '\0';
 
         header->key = (char*)calloc(strlen(token), sizeof(char));
@@ -112,17 +124,26 @@ RequestHttp* request_http_from_string(char *request_http_string) {
     RequestHttp *request_http = (RequestHttp*)calloc(1, sizeof(RequestHttp));
 
     char *token = strtok(header_token, " ");
-    if (token == NULL) return NULL;
+    if (token == NULL) {
+        free_request_http(request_http);
+        return NULL;
+    }
     request_http->method = (char*)calloc(strlen(token), sizeof(char));
     strcpy(request_http->method, token);
 
     token = strtok(NULL, " ");
-    if (token == NULL) return NULL;
+    if (token == NULL) {
+        free_request_http(request_http);
+        return NULL;
+    }
     request_http->path = (char*)calloc(strlen(token), sizeof(char));
     strcpy(request_http->path, token);
 
     token = strtok(NULL, "\r\n");
-    if (token == NULL) return NULL;
+    if (token == NULL) {
+        free_request_http(request_http);
+        return NULL;
+    }
     request_http->protocol = (char*)calloc(strlen(token), sizeof(char));
     strcpy(request_http->protocol, token);
 
@@ -134,7 +155,10 @@ RequestHttp* request_http_from_string(char *request_http_string) {
         HttpHeader *header = (HttpHeader*)calloc(1, sizeof(HttpHeader));
 
         char *split = strstr(token, ": ");
-        if (split == NULL) return NULL;
+        if (split == NULL) {
+            free_request_http(request_http);
+            return NULL;
+        }
         split[0] = '\0';
 
         header->key = (char*)calloc(strlen(token), sizeof(char));
@@ -156,6 +180,17 @@ RequestHttp* request_http_from_string(char *request_http_string) {
     return request_http;
 }
 
+void free_http_headers(HttpHeader *http_header) {
+    while (http_header != NULL) {
+        HttpHeader *next = http_header->next;
+        free(http_header->key);
+        free(http_header->value);
+        free(http_header);
+        http_header = next;
+    }
+    return;
+}
+
 void free_respond_http(RespondHttp *respond_http) {
     if (respond_http == NULL) {
         return;
@@ -169,17 +204,8 @@ void free_respond_http(RespondHttp *respond_http) {
     if (respond_http->status_text != NULL) {
         free(respond_http->status_text);
     }
-    HttpHeader *header = respond_http->headers;
-    while (header != NULL) {
-        HttpHeader *next = header->next;
-        if (header->key != NULL) {
-            free(header->key);
-        }
-        if (header->value != NULL) {
-            free(header->value);
-        }
-        free(header);
-        header = next;
+    if (respond_http->headers != NULL) {
+        free_http_headers(respond_http->headers);
     }
     if (respond_http->body != NULL) {
         free(respond_http->body);
@@ -201,17 +227,8 @@ void free_request_http(RequestHttp *request_http) {
     if (request_http->protocol != NULL) {
         free(request_http->protocol);
     }
-    HttpHeader *header = request_http->headers;
-    while (header != NULL) {
-        HttpHeader *next = header->next;
-        if (header->key != NULL) {
-            free(header->key);
-        }
-        if (header->value != NULL) {
-            free(header->value);
-        }
-        free(header);
-        header = next;
+    if (request_http->headers != NULL) {
+        free_http_headers(request_http->headers);
     }
     if (request_http->body != NULL) {
         free(request_http->body);

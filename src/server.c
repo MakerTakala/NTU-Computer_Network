@@ -42,8 +42,11 @@ void start_server(struct Server *server) {
 
         printf("Client connected\n");
 
-        if (contect(client_fd) == -1) {
-            fprintf(stderr, "Contect failed");
+        int32_t status = contect(client_fd);
+        if (status == -1) {
+            fprintf(stderr, "Contect fail");
+        } else if(status == 0)  {
+            printf("Client disconnected\n");
         }
         close(client_fd);
     }
