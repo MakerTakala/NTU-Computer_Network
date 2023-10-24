@@ -13,6 +13,7 @@ struct Server* create_server(char *address, uint16_t port, uint32_t max_connecti
     server->socket_fd = server_fd;
     server->config.sin_family = AF_INET;
     server->config.sin_port = htons(port);
+    server->config.sin_addr.s_addr = inet_addr(address);
     server->max_connections = max_connections;
 
     if (bind(server_fd, (struct sockaddr*) &(server->config), sizeof(server->config)) == -1) {

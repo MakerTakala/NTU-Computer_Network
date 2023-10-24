@@ -21,13 +21,13 @@ static char* read_file(char *path) {
 
 static char* get_profile() {
     RespondHttp *respond = calloc(1, sizeof(RespondHttp));
-    respond->protocol = "HTTP/1.1";
-    respond->status_code = "200";
-    respond->status_text = "OK";
+    respond->protocol = strdup("HTTP/1.1");
+    respond->status_code = strdup("200");
+    respond->status_text = strdup("OK");
     
     HttpHeader *content_type = calloc(1, sizeof(HttpHeader));
-    content_type->key = "Content-Type";
-    content_type->value = "text/html";
+    content_type->key = strdup("Content-Type");
+    content_type->value = strdup("text/html");
     content_type->next = NULL;
 
     respond->headers = content_type;
@@ -41,7 +41,7 @@ static char* get_profile() {
 }
 
 static char* post_reflect(char *message) {
-    return message;
+    return strdup(message);
 }
 
 int32_t contect(int32_t client_fd) {
@@ -57,6 +57,7 @@ int32_t contect(int32_t client_fd) {
     printf("Received:\n%s\n", read_buffer);
     RequestHttp *request = request_http_from_string(read_buffer);
     free(read_buffer);
+    
     char *send_buffer = NULL;
     if (request == NULL) {
         fprintf(stderr, "Request is Wrong");
@@ -64,6 +65,7 @@ int32_t contect(int32_t client_fd) {
     }
     else if (!strcmp(request->method, "GET")) {
         if (!strcmp(request->path, "/")) {
+            
             send_buffer = get_profile();
         }
     }
@@ -76,6 +78,7 @@ int32_t contect(int32_t client_fd) {
         fprintf(stderr, "Method not supported");
         return -1;
     }
+    
     free_request_http(request);
     
     printf("Sending:\n%s\n", send_buffer);
@@ -86,6 +89,7 @@ int32_t contect(int32_t client_fd) {
         close(client_fd);
         return 0;
     }
+    
     free(send_buffer);
     close(client_fd);
     return 1;

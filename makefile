@@ -29,6 +29,6 @@ $(CLIEN_EXE): $(CLIENT_OBJ)
 
 
 clean:
-	rm -f $(OBJ) $(EXE)
+	rm -f $(OBJ) $(EXE) $(DEP) $(CLIEN_EXE) $(CLIENT_OBJ)  $(CLIENT_DEP)
 
 .PNONY: all clean
