@@ -41,7 +41,9 @@ static char* get_profile() {
 }
 
 static char* post_reflect(char *message) {
-    return strdup(message);
+    char *respond_string = calloc(BUFFER_SIZE, sizeof(char));
+    sprintf(respond_string, "Reflect From Server: %s\n", message);
+    return respond_string;
 }
 
 int32_t contect(int32_t client_fd) {
