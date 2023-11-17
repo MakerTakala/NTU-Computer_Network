@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login</title>
+    </head>
+    <body>
+        <h1>Login</h1>
+        <div>
+            <p>Account:</p>
+            <input id="account_input" type="text" />
+        </div>
+        <div>
+            <p>Password:</p>
+            <input id="password_input" type="password" />
+        </div>
+
+        <button id="login_btn" onclick="login();">Login</button>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+    <script>
+        import sha256 from "js-sha256";
+
+        async function login() {
+            let account_input = document.querySelector("#account_input");
+            let password_input = document.querySelector("#password_input");
+
+            const response = await fetch("/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    account: account_input.value,
+                    password: sha256(password_input.value),
+                }),
+            });
+
+            if (response.ok) {
+                alert("Login success!");
+                window.location.href = "/index.html";
+            } else {
+                alert("Account or password is wrong!");
+            }
+        }
+    </script>
+</html>

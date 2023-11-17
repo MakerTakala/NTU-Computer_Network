@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Takala</title>
+    </head>
+    <body>
+        <div style="text-align: right">
+            <a href="/login.html"><button>Login</button></a>
+            <a href="/register.html"><button>Register</button></a>
+        </div>
+        <hr />
+        <div>
+            <h1>My name is Takala.</h1>
+            <p>41047025S</p>
+            <p>Let leave a message</p>
+            <input id="message_input" type="text" />
+            <button id="send_message" onclick="send_message();">SEND</button>
+            <div id="messages"></div>
+        </div>
+    </body>
+    <script>
+        async function update_message() {
+            const response = await fetch("/api/message");
+            const body = await response.json();
+
+            if (!response.ok) throw Error(response.statusText);
+
+            let messages = document.querySelector("#messages");
+            for (let i = 0; i < body.length; i++) {
+                let p = document.createElement("p");
+                p.innerHTML = body[i].account + ": " + body[i].message;
+                messages.appendChild(p);
+            }
+        }
+
+        function send_message() {
+            let message_input = document.querySelector("#message_input");
+
+            fetch("/api/left_message", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    account: "admin",
+                    message: message_input.value,
+                }),
+            }).then((response) => {
+                update_message();
+                message_input.value = "";
+            });
+        }
+
+        function main() {
+            update_message();
+        }
+        main();
+    </script>
+</html>

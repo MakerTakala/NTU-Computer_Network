@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Register</title>
+    </head>
+    <body>
+        <h1>Register</h1>
+        <div>
+            <p>Account:</p>
+            <input id="account_input" type="text" />
+        </div>
+        <div>
+            <p>Password:</p>
+            <input id="password_input" type="password" />
+        </div>
+        <div>
+            <p>Check password:</p>
+            <input id="check_password_input" type="password" />
+        </div>
+        <button id="register_btn" onclick="register();">Register</button>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+    <script>
+        import sha256 from "js-sha256";
+
+        async function register() {
+            let account_input = document.querySelector("#account_input");
+            let password_input = document.querySelector("#password_input");
+            let check_password_input = document.querySelector(
+                "#check_password_input"
+            );
+            if (password_input.value != check_password_input.value) {
+                alert("Password is not the same!");
+                return;
+            }
+
+            const response = await fetch("/api/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    account: account_input.value,
+                    password: sha256(password_input.value),
+                }),
+            });
+            console.log(response);
+
+            if (response.ok) {
+                alert("Register success!");
+                window.location.href = "/login.html";
+            } else {
+                alert("Account is already exist!");
+            }
+        }
+    </script>
+</html>
