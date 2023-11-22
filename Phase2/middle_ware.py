@@ -1,6 +1,7 @@
 import json
-
 from http import parse_request, Http_response
+from cookie import generate_cookie, remove_cookie, get_account_by_cookie, check_cookie
+
 
 BUFFER_SIZE = 4096
 
@@ -18,6 +19,8 @@ def handle_client(client_fd):
         response = login_page()
     elif request.path == "/register.html" and request.method == "GET":
         response = register_page()
+    elif request.path == "/api/get_account" and request.method == "GET":
+        response = get_account(request)
     elif request.path == "/api/message" and request.method == "GET":
         response = get_message()
     elif request.path == "/api/left_message" and request.method == "POST":
@@ -40,6 +43,34 @@ def root_page():
     profile.close()
     return response
 
+def login_page():
+    login = open("web/login.html", "r")
+    response = Http_response("HTTP/1.1", "200", "OK", {}, login.read())
+    login.close()
+    return response
+
+def register_page():
+    register = open("web/register.html", "r")
+    response = Http_response("HTTP/1.1", "200", "OK", {}, register.read())
+    register.close()
+    return response
+
+def get_account(request):
+    cookie = request.headers["Cookie"]
+    cookies = cookie.split(";")
+    cookie_id = ""
+    for i in cookies:
+        if i.split("=")[0].strip() == "cookie_id":
+            cookie_id = i.split("=")[1]
+            break
+    
+    account = ""
+    if check_cookie(cookie_id):
+        account = get_account_by_cookie(cookie_id)
+    account_string = json.dumps({"account": account})
+    return Http_response("HTTP/1.1", "200", "OK", {}, account_string)
+        
+
 def get_message():
     messages = open("database/messages.json", "r")
     response = Http_response("HTTP/1.1", "200", "OK", {}, messages.read())
@@ -53,24 +84,14 @@ def left_message(request):
     json.dump(messages, open("database/messages.json", "w"))
     return Http_response("HTTP/1.1", "200", "OK", {}, "")
 
-def login_page():
-    login = open("web/login.html", "r")
-    response = Http_response("HTTP/1.1", "200", "OK", {}, login.read())
-    login.close()
-    return response
-
-def register_page():
-    register = open("web/register.html", "r")
-    response = Http_response("HTTP/1.1", "200", "OK", {}, register.read())
-    register.close()
-    return response
-
 def login(request):
     account_data = json.load(open("database/account.json", "r"))
     account = json.loads(request.body)
     for i in account_data:
         if i["account"] == account["account"] and i["password"] == account["password"]:
-            response = Http_response("HTTP/1.1", "200", "OK", {}, "")
+            remove_cookie(account["account"])
+            cookie = generate_cookie(i["account"])
+            response = Http_response("HTTP/1.1", "200", "OK", {"Set-Cookie": cookie}, "")
             return response
     return Http_response("HTTP/1.1", "401", "Unauthorized", {}, "")
 

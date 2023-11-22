@@ -16,10 +16,7 @@
 
         <button id="login_btn" onclick="login();">Login</button>
     </body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
     <script>
-        import sha256 from "js-sha256";
-
         async function login() {
             let account_input = document.querySelector("#account_input");
             let password_input = document.querySelector("#password_input");
@@ -31,7 +28,7 @@
                 },
                 body: JSON.stringify({
                     account: account_input.value,
-                    password: sha256(password_input.value),
+                    password: password_input.value,
                 }),
             });
 

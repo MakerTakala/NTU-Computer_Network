@@ -5,16 +5,22 @@
     </head>
     <body>
         <div style="text-align: right">
-            <a href="/login.html"><button>Login</button></a>
-            <a href="/register.html"><button>Register</button></a>
+            <a href="/login.html" id="login"><button>Login</button></a>
+            <a href="/register.html" id="register"><button>Register</button></a>
+            <p id="account"></p>
         </div>
+
         <hr />
         <div>
             <h1>My name is Takala.</h1>
             <p>41047025S</p>
-            <p>Let leave a message</p>
-            <input id="message_input" type="text" />
-            <button id="send_message" onclick="send_message();">SEND</button>
+            <div>
+                <p>Let leave a message</p>
+                <input id="message_input" type="text" />
+                <button id="send_message" onclick="send_message();">
+                    SEND
+                </button>
+            </div>
             <div id="messages"></div>
         </div>
     </body>
@@ -26,6 +32,7 @@
             if (!response.ok) throw Error(response.statusText);
 
             let messages = document.querySelector("#messages");
+            messages.innerHTML = "";
             for (let i = 0; i < body.length; i++) {
                 let p = document.createElement("p");
                 p.innerHTML = body[i].account + ": " + body[i].message;
@@ -33,16 +40,19 @@
             }
         }
 
-        function send_message() {
+        async function send_message() {
             let message_input = document.querySelector("#message_input");
-
+            account = await get_account();
+            if (account == "") {
+                account = "Anonymous";
+            }
             fetch("/api/left_message", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    account: "admin",
+                    account: account,
                     message: message_input.value,
                 }),
             }).then((response) => {
@@ -51,8 +61,34 @@
             });
         }
 
+        async function get_account() {
+            let respond = await fetch("/api/get_account", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            body = await respond.json();
+            return body["account"];
+        }
+
+        async function check_login() {
+            let account = await get_account();
+            if (account != "") {
+                document.querySelector("#login").style.display = "none";
+                document.querySelector("#register").style.display = "none";
+                document.querySelector("#account").style.display = "inline";
+                document.querySelector("#account").innerHTML = account;
+            } else {
+                document.querySelector("#login").style.display = "inline";
+                document.querySelector("#register").style.display = "inline";
+                document.querySelector("#account").style.display = "none";
+            }
+        }
+
         function main() {
             update_message();
+            check_login();
         }
         main();
     </script>
