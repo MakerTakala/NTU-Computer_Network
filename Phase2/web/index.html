@@ -8,6 +8,7 @@
             <a href="/login.html" id="login"><button>Login</button></a>
             <a href="/register.html" id="register"><button>Register</button></a>
             <p id="account"></p>
+            <button id="logout" onclick="logout();">Logout</button>
         </div>
 
         <hr />
@@ -15,7 +16,12 @@
             <h1>My name is Takala.</h1>
             <p>41047025S</p>
             <div>
-                <p>Let leave a message</p>
+                <h4>
+                    <a href="/video.html" id="video"
+                        ><button>Something Interesting</button></a
+                    >
+                </h4>
+                <h3>Let leave a message</h3>
                 <input id="message_input" type="text" />
                 <button id="send_message" onclick="send_message();">
                     SEND
@@ -79,10 +85,27 @@
                 document.querySelector("#register").style.display = "none";
                 document.querySelector("#account").style.display = "inline";
                 document.querySelector("#account").innerHTML = account;
+                document.querySelector("#logout").style.display = "inline";
             } else {
                 document.querySelector("#login").style.display = "inline";
                 document.querySelector("#register").style.display = "inline";
                 document.querySelector("#account").style.display = "none";
+                document.querySelector("#logout").style.display = "none";
+            }
+        }
+
+        async function logout() {
+            const response = await fetch("/api/logout", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (response.ok) {
+                alert("Logout success!");
+                window.location.href = "/index.html";
+            } else {
+                alert("Logout failed!");
             }
         }
 

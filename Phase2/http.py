@@ -8,14 +8,21 @@ class Http_response:
         self.headers = headers
         self.body = body
 
-    def stringify(self) -> str:
+    def byteify(self) -> bytes:
         output = f"{self.protocol} {self.status_code} {self.status_text}\r\n"
         for header in self.headers:
             output += f"{header}: {self.headers[header]}\r\n"
         output += "\r\n"
-        if self.body != "":
-            output += self.body
-        return output
+        output = str.encode(output)
+        
+        output_body = bytes()
+        if type(self.body) == str:
+            output_body = str.encode(self.body)
+        elif type(self.body) == bytes:
+            output_body = self.body
+
+        output += output_body
+        return output 
     
 
 class Http_request:
@@ -26,15 +33,21 @@ class Http_request:
         self.headers = headers
         self.body = body
 
-    def stringify(self):
+    def byteify(self):
         output = f"{self.method} {self.path} {self.protocol}\r\n"
         for header in self.headers:
             output += f"{header}: {self.headers[header]}\r\n"
         output += "\r\n"
-        if self.body != "":
-            output += self.body
-        return output
+        output = str.encode(output)
+        
+        output_body = bytes()
+        if type(self.body) == str:
+            output_body = str.encode(self.body)
+        elif type(self.body) == bytes:
+            output_body = self.body
 
+        output += output_body
+        return output 
 
 def parse_response(data) -> Http_response:
     if data == "":
