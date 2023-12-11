@@ -15,19 +15,29 @@
         <div>
             <h1>My name is Takala.</h1>
             <p>41047025S</p>
+
+            <h4>
+                <a href="/video.html" id="video"
+                    ><button>Something Interesting</button></a
+                >
+            </h4>
+
+            <hr />
             <div>
-                <h4>
-                    <a href="/video.html" id="video"
-                        ><button>Something Interesting</button></a
-                    >
-                </h4>
-                <h3>Let leave a message</h3>
+                <h3>Let leave a message in lobby</h3>
                 <input id="message_input" type="text" />
+
                 <button id="send_message" onclick="send_message();">
                     SEND
                 </button>
             </div>
-            <div id="messages"></div>
+            <div>
+                <h3>LOBBY BOARD</h3>
+                <div id="messages"></div>
+            </div>
+            <hr />
+
+            <div id="poke"></div>
         </div>
     </body>
     <script>
@@ -38,11 +48,29 @@
             if (!response.ok) throw Error(response.statusText);
 
             let messages = document.querySelector("#messages");
-            messages.innerHTML = "";
+            const account = await get_account();
             for (let i = 0; i < body.length; i++) {
-                let p = document.createElement("p");
-                p.innerHTML = body[i].account + ": " + body[i].message;
-                messages.appendChild(p);
+                let message = document.createElement("div");
+
+                let p = document.createElement("span");
+                p.innerHTML = body[i].account + ": " + body[i].message + "   ";
+                message.appendChild(p);
+
+                if (
+                    account != "" &&
+                    account != body[i].account &&
+                    body[i].account != "Anonymous"
+                ) {
+                    let btn = document.createElement("button");
+                    btn.innerHTML = "Poke";
+                    message.appendChild(btn);
+                    btn.onclick = async function () {
+                        poke_people(account, body[i].account);
+                        btn.remove();
+                    };
+                }
+
+                messages.appendChild(message);
             }
         }
 
@@ -74,7 +102,7 @@
                     "Content-Type": "application/json",
                 },
             });
-            body = await respond.json();
+            const body = await respond.json();
             return body["account"];
         }
 
@@ -109,9 +137,79 @@
             }
         }
 
-        function main() {
+        async function get_poke() {
+            const account = await get_account();
+            if (account == "") {
+                return;
+            }
+            const response = await fetch("/api/get_poke", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    account: account,
+                }),
+            });
+            let body = await response.json();
+            body = body["poke"];
+
+            console.log(body);
+
+            if (response.ok) {
+                const poke_content = document.querySelector("#poke");
+                const poke_title = document.createElement("h3");
+                poke_title.innerHTML = "Someone Poke You!";
+                poke_content.appendChild(poke_title);
+
+                for (let i = 0; i < body.length; i++) {
+                    let poke = document.createElement("div");
+
+                    let p = document.createElement("span");
+                    p.innerHTML =
+                        body[i].from +
+                        " poke you " +
+                        body[i].times +
+                        " times! ";
+                    poke.appendChild(p);
+
+                    let btn = document.createElement("button");
+                    btn.innerHTML = "Poke back";
+                    btn.onclick = async function () {
+                        poke_people(account, body[i].from);
+                        btn.remove();
+                    };
+                    poke.appendChild(btn);
+
+                    poke_content.appendChild(poke);
+                    let hr = document.createElement("hr");
+                    poke_content.appendChild(hr);
+                }
+            } else {
+                alert("get poke failed!");
+            }
+        }
+
+        async function poke_people(from, to) {
+            if ((await get_account()) == "") {
+                alert("Please login first!");
+            }
+            const response = await fetch("/api/poke", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    from: from,
+                    to: to,
+                }),
+            });
+        }
+
+        async function main() {
             update_message();
             check_login();
+            get_poke();
         }
         main();
     </script>

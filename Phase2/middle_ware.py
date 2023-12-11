@@ -37,6 +37,10 @@ def handle_client(client_fd):
         response = logout(request)
     elif request.path == "/api/register" and request.method == "POST":
         response = register(request)
+    elif request.path == "/api/get_poke" and request.method == "POST":
+        response = get_poke(request)
+    elif request.path == "/api/poke" and request.method == "POST":
+        response = poke(request)
     else:
         response = Http_response("HTTP/1.1", "404", "Not Found", {}, "")
     client_fd.send(response.byteify())
@@ -83,20 +87,22 @@ def get_rick_roll():
     return response
 
 def get_account(request):
-    cookie = request.headers["Cookie"]
-    cookies = cookie.split(";")
-    cookie_id = ""
-    for i in cookies:
-        if i.split("=")[0].strip() == "cookie_id":
-            cookie_id = i.split("=")[1]
-            break
-    
-    account = ""
-    if check_cookie(cookie_id):
-        account = get_account_by_cookie(cookie_id)
-    account_string = json.dumps({"account": account})
-    return Http_response("HTTP/1.1", "200", "OK", {}, account_string)
+    if "Cookie" in request.headers:
+        cookie = request.headers["Cookie"]
+        cookies = cookie.split(";")
+        cookie_id = ""
+        for i in cookies:
+            if i.split("=")[0].strip() == "cookie_id":
+                cookie_id = i.split("=")[1]
+                break
         
+        account = ""
+        if check_cookie(cookie_id):
+            account = get_account_by_cookie(cookie_id)
+        account_string = json.dumps({"account": account})
+        return Http_response("HTTP/1.1", "200", "OK", {}, account_string)
+    else:
+        return Http_response("HTTP/1.1", "200", "OK", {}, json.dumps({"account": ""}))
 
 def get_message():
     messages = open("database/messages.json", "r")
@@ -142,3 +148,51 @@ def register(request):
     account_data.append(account)
     json.dump(account_data, open("database/account.json", "w"))
     return Http_response("HTTP/1.1", "200", "OK", {}, "")
+
+def get_poke(request):
+    account = json.loads(request.body)
+    poke_data = json.load(open("database/poke.json", "r"))
+    for i in poke_data:
+        if i["account"] == account["account"]:
+            return Http_response("HTTP/1.1", "200", "OK", {}, json.dumps({"poke": i["poke"]}))
+    print("No account")
+    return Http_response("HTTP/1.1", "200", "OK", {}, json.dumps({"poke": []}))
+
+def poke(request):
+    poke_data = json.load(open("database/poke.json", "r"))
+
+    poke = json.loads(request.body)
+
+    
+    poke_times = 0
+    for i in poke_data:
+        if i["account"] == poke["from"]:
+            for j in i["poke"]:
+                if j["from"] == poke["to"]:
+                    poke_times = j["times"]
+                    i["poke"].remove(j)
+                    break
+            break
+
+    if poke_times == 0:
+        return Http_response("HTTP/1.1", "200", "OK", {}, "")
+
+    exist = False
+    for i in poke_data:
+        if i["account"] == poke["to"]:
+            exist = True
+            break
+    if not exist:
+        poke_data.append({"account": poke["to"], "poke": []})
+
+    
+    for i in poke_data:
+        if i["account"] == poke["to"]:
+            i["poke"].append({"from": poke["from"], "times": poke_times + 1})
+            print(poke_times)
+            break
+
+    json.dump(poke_data, open("database/poke.json", "w"))
+    return Http_response("HTTP/1.1", "200", "OK", {}, "")
+
+    
