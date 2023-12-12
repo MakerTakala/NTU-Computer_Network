@@ -54,3 +54,4 @@ dkms.conf
 .DS_Store
 
 Phase2/multithread_test/
+Phase2/.env

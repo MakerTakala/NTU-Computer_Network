@@ -1,6 +1,7 @@
 import json
-from http import parse_request, Http_response
+from http_class import parse_request, Http_response
 from cookie import generate_cookie, remove_cookie, get_account_by_cookie, check_cookie
+from youtube import get_comment_api
 
 
 BUFFER_SIZE = 4096
@@ -41,6 +42,8 @@ def handle_client(client_fd):
         response = get_poke(request)
     elif request.path == "/api/poke" and request.method == "POST":
         response = poke(request)
+    elif request.path == "/api/comment" and request.method == "GET":
+        response = get_comment()
     else:
         response = Http_response("HTTP/1.1", "404", "Not Found", {}, "")
     client_fd.send(response.byteify())
@@ -196,3 +199,7 @@ def poke(request):
     return Http_response("HTTP/1.1", "200", "OK", {}, "")
 
     
+def get_comment():
+    data = get_comment_api()
+    
+    return Http_response("HTTP/1.1", "200", "OK", {}, json.dumps(data))

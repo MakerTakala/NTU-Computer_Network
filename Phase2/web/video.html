@@ -12,5 +12,36 @@
         <hr />
         <video id="videoElement" src="/rick_roll.mp4" autoplay controls></video>
     </body>
-    <script></script>
+    <h2>Comments</h2>
+    <div id="commentSection"></div>
+    <script>
+        async function main() {
+            const commentSection = document.getElementById("commentSection");
+            const response = await fetch("/api/comment");
+            const body = await response.json();
+            console.log(body);
+
+            if (!response.ok) throw Error(response.statusText);
+
+            for (let i = 0; i < body.length; i++) {
+                let comment = document.createElement("div");
+
+                let user = document.createElement("div");
+                let commentText = document.createElement("div");
+
+                user.innerHTML = body[i].user_name + ": ";
+                user.style.fontWeight = "bold";
+                commentText.innerHTML = body[i].comment;
+                commentText.style.marginLeft = "10px";
+                comment.appendChild(user);
+                comment.appendChild(commentText);
+
+                comment.style.marginBottom = "10px";
+
+                commentSection.appendChild(comment);
+            }
+        }
+
+        main();
+    </script>
 </html>
