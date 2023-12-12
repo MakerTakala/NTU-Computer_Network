@@ -2,7 +2,7 @@ import signal
 
 from server import Server
 
-32768
+
 HOST = "0.0.0.0"
 PORT = 8080
 MAX_CONNECTIONS = 20

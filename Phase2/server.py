@@ -5,12 +5,10 @@ from middle_ware import handle_client
 
 class Server:
     def __init__(self, host, port, max_connections):
-        self.host = host
-        self.port = port
-        self.max_connections = max_connections
+
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.bind((self.host, self.port))
-        self.server_socket.listen(self.max_connections)
+        self.server_socket.bind((host, port))
+        self.server_socket.listen(max_connections)
         self.client_threads = []
     
     def run(self):    
