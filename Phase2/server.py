@@ -10,6 +10,7 @@ class Server:
         self.server_socket.bind((host, port))
         self.server_socket.listen(max_connections)
         self.client_threads = []
+        print(f"Server is listening on {host}:{port}")
     
     def run(self):    
         
