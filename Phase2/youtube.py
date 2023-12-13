@@ -11,7 +11,7 @@ def get_comment_api():
     request = youtube.commentThreads().list(part="snippet,replies", videoId=video_id, textFormat="plainText", maxResults=100)
 
     data = []
-    for i in range(random.randint(1, 10)):
+    for i in range(random.randint(1, 100)):
         
         response = request.execute()
 
