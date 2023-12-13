@@ -8,9 +8,11 @@ def get_comment_api():
 
     youtube = build('youtube', 'v3', developerKey=api_key)
     video_id = "dQw4w9WgXcQ"
+    request = youtube.commentThreads().list(part="snippet,replies", videoId=video_id, textFormat="plainText", maxResults=100)
+
     data = []
-    for i in range(random.randint(0, 10)):
-        request = youtube.commentThreads().list(part="snippet,replies", videoId=video_id, textFormat="plainText", maxResults=100)
+    for i in range(random.randint(1, 10)):
+        
         response = request.execute()
 
         data = []
@@ -22,6 +24,8 @@ def get_comment_api():
             data.append({"user_name": user_name, "comment": comment})
 
         request = youtube.commentThreads().list_next(request, response)
+
+    print(data)
 
     return data 
     

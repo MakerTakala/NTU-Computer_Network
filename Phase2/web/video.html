@@ -13,9 +13,10 @@
         <video id="videoElement" src="/rick_roll.mp4" autoplay controls></video>
     </body>
     <h2>Comments</h2>
+    <div id="loading">Loading</div>
     <div id="commentSection"></div>
     <script>
-        async function main() {
+        async function load_comment() {
             const commentSection = document.getElementById("commentSection");
             const response = await fetch("/api/comment");
             const body = await response.json();
@@ -40,6 +41,28 @@
 
                 commentSection.appendChild(comment);
             }
+            const loading = document.getElementById("loading");
+            loading.style.display = "none";
+        }
+
+        async function loading() {
+            const loading = document.getElementById("loading");
+            setInterval(() => {
+                if (loading.innerHTML === "Loading") {
+                    loading.innerHTML = "Loading .";
+                } else if (loading.innerHTML === "Loading.") {
+                    loading.innerHTML = "Loading ..";
+                } else if (loading.innerHTML === "Loading..") {
+                    loading.innerHTML = "Loading ...";
+                } else if (loading.innerHTML === "Loading...") {
+                    loading.innerHTML = "Loading ";
+                }
+            }, 300);
+        }
+
+        async function main() {
+            load_comment();
+            loading();
         }
 
         main();
