@@ -53,21 +53,25 @@ RespondHttp* respond_http_from_string(char *respond_http_string) {
         free_respond_http(respond_http);
         return NULL;
     }
-    respond_http->protocol = strdup(token);
+    respond_http->protocol = calloc(strlen(token) + 1, sizeof(char));
+    strcpy(respond_http->protocol, token);
+    
 
     token = strtok(NULL, " ");
     if (token == NULL) {
         free_respond_http(respond_http);
         return NULL;
     }
-    respond_http->status_code = strdup(token);
+    respond_http->status_code = calloc(strlen(token) + 1, sizeof(char));
+    strcpy(respond_http->status_code, token);
 
     token = strtok(NULL, "\r\n");
     if (token == NULL) {
         free_respond_http(respond_http);
         return NULL;
     }
-    respond_http->status_text = strdup(token);
+    respond_http->status_text = calloc(strlen(token) + 1, sizeof(char));
+    strcpy(respond_http->status_text, token);
 
     while (1) {
         token = strtok(NULL, "\n");
@@ -83,17 +87,20 @@ RespondHttp* respond_http_from_string(char *respond_http_string) {
         }
         split[0] = '\0';
 
-        header->key = strdup(token);
+        header->key = calloc(strlen(token) + 1, sizeof(char));
+        strcpy(header->key, token);
 
         token += strlen(token) + 2;
-        header->value = strdup(token);
+        header->value = calloc(strlen(token) + 1, sizeof(char));
+        strcpy(header->value, token);
         
         header->next = respond_http->headers;
         respond_http->headers = header;
     }
 
     if (body_token != NULL) {
-        respond_http->body = strdup(body_token);
+        respond_http->body = calloc(strlen(body_token) + 1, sizeof(char));
+        strcpy(respond_http->body, body_token);
     }
     
     return respond_http;
@@ -122,21 +129,24 @@ RequestHttp* request_http_from_string(char *request_http_string) {
         free_request_http(request_http);
         return NULL;
     }
-    request_http->method = strdup(token);
+    request_http->method = calloc(strlen(token) + 1, sizeof(char));
+    strcpy(request_http->method, token);
 
     token = strtok(NULL, " ");
     if (token == NULL) {
         free_request_http(request_http);
         return NULL;
     }
-    request_http->path = strdup(token);
+    request_http->path = calloc(strlen(token) + 1, sizeof(char));
+    strcpy(request_http->path, token);
 
     token = strtok(NULL, "\r\n");
     if (token == NULL) {
         free_request_http(request_http);
         return NULL;
     }
-    request_http->protocol = strdup(token);
+    request_http->protocol = calloc(strlen(token) + 1, sizeof(char));
+    strcpy(request_http->protocol, token);
 
     while (1) {
         token = strtok(NULL, "\n");
@@ -152,17 +162,20 @@ RequestHttp* request_http_from_string(char *request_http_string) {
         }
         split[0] = '\0';
 
-        header->key = strdup(token);
+        header->key = calloc(strlen(token) + 1, sizeof(char));
+        strcpy(header->key, token);
 
         token += strlen(token) + 2;
-        header->value = strdup(token);
+        header->value = calloc(strlen(token) + 1, sizeof(char));
+        strcpy(header->value, token);
         
         header->next = request_http->headers;
         request_http->headers = header;
     }
 
     if (body_token != NULL) {
-        request_http->body = strdup(body_token);
+        request_http->body = calloc(strlen(body_token) + 1, sizeof(char));
+        strcpy(request_http->body, body_token);
     }
     
     return request_http;
