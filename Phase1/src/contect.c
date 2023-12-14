@@ -1,5 +1,6 @@
 #include "contect.h"
 
+
 static char* read_file(char *path) {
     FILE *file = fopen(path, "r");
     if (file == NULL) {
@@ -21,13 +22,13 @@ static char* read_file(char *path) {
 
 static char* get_profile() {
     RespondHttp *respond = calloc(1, sizeof(RespondHttp));
-    respond->protocol = "HTTP/1.1";
-    respond->status_code = "200";
-    respond->status_text = "OK";
+    respond->protocol = strdup("HTTP/1.1");
+    respond->status_code = strdup("200");
+    respond->status_text = strdup("OK");
     
     HttpHeader *content_type = calloc(1, sizeof(HttpHeader));
-    content_type->key = "Content-Type";
-    content_type->value = "text/html";
+    content_type->key = strdup("Content-Type");
+    content_type->value = strdup("text/html");
     content_type->next = NULL;
 
     respond->headers = content_type;

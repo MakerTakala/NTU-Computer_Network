@@ -166,6 +166,16 @@ def poke(request):
 
     poke = json.loads(request.body)
 
+    exist = False
+    for i in poke_data:
+        if i["account"] == poke["to"]:
+            for j in i["poke"]:
+                if j["from"] == poke["from"]:
+                    exist = True
+                    break
+            break
+    if exist:
+        return Http_response("HTTP/1.1", "200", "OK", {}, "")
     
     poke_times = 0
     for i in poke_data:
@@ -176,9 +186,6 @@ def poke(request):
                     i["poke"].remove(j)
                     break
             break
-
-    if poke_times == 0:
-        return Http_response("HTTP/1.1", "200", "OK", {}, "")
 
     exist = False
     for i in poke_data:
@@ -192,7 +199,6 @@ def poke(request):
     for i in poke_data:
         if i["account"] == poke["to"]:
             i["poke"].append({"from": poke["from"], "times": poke_times + 1})
-            print(poke_times)
             break
 
     json.dump(poke_data, open("database/poke.json", "w"))
